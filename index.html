@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Game Boy - Snake Game</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <script defer type="text/javascript">
+    window.onload = function(){
+      var stage = document.getElementById("snakegame");
+      var ctx = stage.getContext("2d");
+      document.addEventListener("keydown", keyPush);
+
+      var timeGame = 90;
+      var jogo = setInterval(game, timeGame);
+
+      const vel = 1;
+
+      var vx = vy = 0;
+      var px = 10;
+      var py = 15;
+      var tp = 12;
+      var qp = 15;
+      var ax = ay = 5;
+
+      var trail = [];
+      var tail = 5;
+
+      function game(){
+				px += vx;
+				py += vy;
+				if (px < 0) {
+					px = qp-1;
+				}
+				if (px > qp-1) {
+					px = 0;
+				}
+				if (py < 0) {
+					py = qp-1;
+				}
+				if (py > qp-1) {
+					py = 0;
+				}
+
+				ctx.fillStyle = "#C2EC88";
+				ctx.fillRect(0,0, stage.width, stage.height);
+
+				ctx.fillStyle = "red";
+				ctx.fillRect(ax*tp, ay*tp, tp,tp);
+
+				ctx.fillStyle = "gray";
+				for (var i = 0; i < trail.length; i++) {
+					ctx.fillRect(trail[i].x*tp, trail[i].y*tp, tp-1,tp-1);
+					if (trail[i].x == px && trail[i].y == py){
+            vx = vy = 0;
+            tail = 5;
+            var score = document.getElementById("score");
+            score.innerText = "";
+            score.classList.add("none");
+					}
+				}
+
+				trail.push({x:px,y:py })
+				while (trail.length > tail) {
+					trail.shift();
+				}
+
+				if (ax==px && ay==py){
+					tail++
+          
+					ax = Math.floor(Math.random()*qp);
+					ay = Math.floor(Math.random()*(qp-3));
+
+          document.getElementById("bright").classList.add("active");
+          document.getElementById("bright").classList.remove("noactive");
+          var score = document.getElementById("score");
+          score.innerText = (tail - 5);
+          score.classList.remove("none");
+
+          setTimeout(removeShineButton, 1000);
+          
+          console.log(ax);
+          console.log(ay);
+				}
+			}
+
+      function removeShineButton(){
+        document.getElementById("bright").classList.remove("active");
+        document.getElementById("bright").classList.add("noactive");
+      }
+
+      function reset(){
+        vx = vy = 0;
+				tail = 5;
+      }
+
+      function start(timeGame){
+        console.log(timeGame)
+        if(timeGame > 0){
+          for (var i = 1; i <= jogo; i++){
+            clearInterval(i);
+          }
+        
+          jogo = setInterval(game, timeGame);
+        }
+      }
+      
+      function more(){
+        timeGame -= 50;
+        start(timeGame);
+      }
+
+      function less(){
+        timeGame += 50;
+        start(timeGame);
+      }
+      
+      function keyPush(event){
+          switch (event.keyCode) {
+              case 37: // Left
+                  vx = -vel;
+                  vy = 0;
+                  break;
+              case 38: // up
+                  vx = 0;
+                  vy = -vel;
+                  break;
+              case 39: // right
+                  vx = vel;
+                  vy = 0;
+                  break;
+              case 40: // down
+                  vx = 0;
+                  vy = vel;
+                  break;         
+              default: // down
+                  vx = 0;
+                  vy = vel;
+                  break;
+          }
+      }
+      
+      document.getElementById('start').onclick = keyPush;
+      document.getElementById('reset').onclick = reset;
+      document.getElementById('more').onclick = more;
+      document.getElementById('less').onclick = less;
+
+      document.getElementById('turn-left').onclick = function(){
+        vx = -vel;
+        vy = 0;
+      };
+      document.getElementById('turn-right').onclick = function(){
+        vx = vel;
+        vy = 0;
+      };
+      document.getElementById('turn-top').onclick = function(){
+        vx = 0;
+        vy = -vel;
+      };
+      document.getElementById('turn-bottom').onclick = function(){
+        vx = 0;
+        vy = vel;
+      };
+    }
+  </script>
+</head>
+<body>
+  <main class="gameboy">
+    <div class="elements">
+      <div class="element element-1"></div>
+      <div class="element element-2"></div>
+      <div class="element element-3"></div>
+      <div class="element element-4"></div>
+      <div class="element element-5"></div>
+    </div>
+    <div class="console">
+      <div class="gameboy-body">
+        <header></header>
+        <section class="screen">
+          <span id="bright"></span>
+          <div class="glass">
+              <canvas id="snakegame" width="190" height="150"></canvas>
+          </div>
+          <div id="score" class="none"></div>
+        </section>
+        <section class="actions">
+          <div class="directions">
+            <button class="arrow-left" id="turn-left"></button>
+            <button class="arrow-top" id="turn-top"></button>
+            <button class="arrow-right" id="turn-right"></button>
+            <button class="arrow-bottom" id="turn-bottom"></button>
+          </div>
+          <div class="buttons">
+              <button class="button-a" id="more">+</button>
+              <button class="button-b" id="less">-</button>
+          </div>
+          <ul class="start-reset">
+              <li><button class="start" id="start"></button><span>START</span></li>
+              <li><button class="reset" id="reset"></button><span>RESET</span></li>
+          </ul>
+          
+          <div class="points">
+              <span>•••••</span><br>
+              <span>•••••••</span><br>
+              <span>•••••</span><br>
+              <span>••••••</span><br>
+              <span>••••</span>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
